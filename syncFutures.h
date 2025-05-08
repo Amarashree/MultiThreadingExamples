@@ -1,18 +1,6 @@
 #include<iostream>
 #include<thread>
-#include<chrono>
-#include<vector>
 #include<future>
-
-int display(){
-    
-    int c = 1000;
-    
-    std::cout<<"\nHello from ASYNC";
-    
-    return c;
-}
-
 
 int factorial(int N)
 {
@@ -21,7 +9,7 @@ int factorial(int N)
         res *= i;
     }
 
-    std::cout << res << "\n";
+    std::cout << "\nFactroial of "<<N<<" is "<<res << "\n";
     return res;
 }
 
@@ -29,34 +17,35 @@ int factorial(int N)
 
 
 int main(){
-
-    //create a future with std::launch::deferred
-    // defferred = function call is deferred until future invoked via wait() or get()
-    std::future<int> f1 = std::async(std::launch::deferred, display);
-
-    //create a future with std::launch::async
-    // async = function is run on its own thread
-    std::future<int> f1 = std::async(std::launch::deferred, display);
-
-    std::future<int> a1 = std::async(std::launch::deferred, factorial, 5);
-    std::cout<<"\nFactorial Value using deferred future with args is  "<<a1.get();
  
+    //creating Packaged tasks as below 
+    // a package will tie a future to a function 
+
+    std::packaged_task<int(void)> p(std::bind(factorial, 6));
+
+    // invoke the future in the package as below
+
+    p();
     
+    // obtain the future associated with the task
+    // a call to get_future() from task will wait until the task is invoked as above
+
+    std::cout<<"\n Obtaining future from packaged task";
+    auto f = p.get_future();
+    std::cout<<"\n Future retrieved from task";
+
+    // get the associated return data from the future as below
+    
+    std::cout<<"\nOutput of Fatorial of 6, from future = "<<f.get();
+
+
+   
+
+
+
     
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
 
     std::cout<<"\n\n\n";
 }
